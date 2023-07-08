@@ -19,8 +19,10 @@ public class ProductService {
     }
 
     public Product getProductById(Long id) {
-        return repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + id));
+        return repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + id));
     }
+
     public Iterable<Product> getProductsByName(String name) {
         return repository.findByName(name);
     }
@@ -33,10 +35,13 @@ public class ProductService {
 
     public Optional<Product> updateProduct(Long id, String newName) {
         Optional<Product> productOpt = repository.findById(id);
-        if (!productOpt.isPresent()) {return  Optional.empty();}
-                //.orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + id));
+        if (!productOpt.isPresent()) {
+            return Optional.empty();
+        }
+        // .orElseThrow(() -> new ResourceNotFoundException("Product not found with id:
+        // " + id));
         Product p = productOpt.get();
-                p.setName(newName);
+        p.setName(newName);
         return Optional.of(repository.save(p));
     }
 
@@ -44,7 +49,4 @@ public class ProductService {
         repository.deleteById(id);
     }
 
-    
-
-    
 }
