@@ -1,9 +1,11 @@
 package com.example.demo.service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.entity.Product;
@@ -14,16 +16,17 @@ public class ProductService {
     @Autowired
     private ProductRepository repository;
 
-    public Iterable<Product> getProducts() {
-        return repository.findAll();
+    public List<Product> getProducts() {
+        List<Product> result = StreamSupport.stream(repository.findAll().spliterator(), false)
+                .collect(Collectors.toList());
+        return result;
     }
 
-    public Product getProductById(Long id) {
-        return repository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + id));
+    public Optional<Product> getProductById(Long id) {
+        return repository.findById(id);
     }
 
-    public Iterable<Product> getProductsByName(String name) {
+    public List<Product> getProductsByName(String name) {
         return repository.findByName(name);
     }
 
@@ -34,13 +37,9 @@ public class ProductService {
     }
 
     public Optional<Product> updateProduct(Long id, String newName) {
-        Optional<Product> productOpt = repository.findById(id);
-        if (!productOpt.isPresent()) {
-            return Optional.empty();
-        }
-        // .orElseThrow(() -> new ResourceNotFoundException("Product not found with id:
-        // " + id));
-        Product p = productOpt.get();
+        Optional<Product> pOpt = getProductById(id);
+        if (!pOpt.isPresent()) return Optional.empty();
+        Product p = pOpt.get();
         p.setName(newName);
         return Optional.of(repository.save(p));
     }
