@@ -12,6 +12,7 @@ import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 public class WebSecurityConfig {
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -33,7 +34,7 @@ public class WebSecurityConfig {
     public UserDetailsService userDetailsService() {
         UserDetails user = User.withDefaultPasswordEncoder()
                 .username("user")
-                .password("pwd") //in prod use passwordEncoder()
+                .password("pwd") //in prod use BCryptPasswordEncoder()
                 .roles("USER").build();
         return new InMemoryUserDetailsManager(user);
     }
